@@ -8,11 +8,13 @@ enum Direction {
     East: (),
     South: (),
     West: (),
-}```
+}
+```
 
 Bu örnekte, `Direction` adında dört varyantlı bir enum tanımladık: `North`, `East`, `South` ve `West`. Her varyant, Yön tipinin farklı bir değerini temsil eder ve bir birim tipi `()` ile ilişkilendirilir. Bir değişkeni örneklendirmek için bu sözdizimi kullanabiliriz:
 ```
-let direction = Direction::North(());```
+let direction = Direction::North(());
+```
 
 ## Enumlar Ve Özel Veri Türleri ##
 
@@ -23,7 +25,8 @@ enum Message {
     Quit: (),
     Echo: felt252,
     Move: (u128, u128),
-}```
+}
+```
 
 Bu örnekte, `Message` enumunun üç çeşidi vardır: `Quit`, `Echo` ve `Move`, hepsi farklı türlere sahiptir. `Quit` birim tipidir - kendisiyle ilişkili hiçbir veri yoktur. `Echo` `felt252` tipindedir. `Move`, iki `u128` değerinden oluşan bir tuple'dır.
 
@@ -49,14 +52,16 @@ impl ProcessingImpl of Processing {
             },
         }
     }
-}```
+}
+```
 
 Bu örnekte, `Message` için `Processing` özelliğini uyguladık. İşte bir `Quit` mesajını işlemek için nasıl kullanılabileceğine dair bir örnek:
 ```
 enum Option<T> {
     Some: T,
     None: (),
-}```
+}
+```
 
 `Option` enumu, bir değerin bulunmama olasılığını açıkça göstermenize olanak tanıyarak kodunuzu daha anlamlı ve hakkında daha kolay mantık yürütülebilir hale getirdiği için faydalıdır. `Option` kullanımı ayrıca, başlatılmamış veya beklenmedik `null` değerlerin kullanılmasından kaynaklanan hataların önlenmesine de yardımcı olabilir.
 
@@ -129,7 +134,8 @@ fn test_increase_amount() {
             'not found'.print();
         },
     }
-}```
+}
+```
 
 Bu örneği anlamamanız çok normal bir sonraki bölümde match leri öğrendiğinizde daha iyi anlayacaksınız.
 # Match #
@@ -152,7 +158,8 @@ fn value_in_cents(coin: Coin) -> felt252 {
         Coin::Dime(_) => 10,
         Coin::Quarter(_) => 25,
     }
-}```
+}
+```
 
 `value_in_cents` fonksiyonunun nasıl çalıştığını açıklayalım. Fonksiyona bir `coin` parametresi veriyoruz. Bu parametre, ilk satırda tanımladığımız `Coin` **enum**’unun bir varyantıdır.
 
@@ -177,7 +184,8 @@ fn value_in_cents(coin: Coin) -> felt252 {
         Coin::Dime(_) => 10,
         Coin::Quarter(_) => 25,
     }
-}```
+}
+```
 
 ## Match İle Option ##
 
@@ -201,22 +209,26 @@ fn main() {
     six.unwrap().print();
     let none = plus_one(Option::None(()));
     none.unwrap().print();
-}```
+}
+```
 
 Option’ın varyantları şöyle tanımlanmıştır:
 ```
 enum Option<T> {
     Some: T,
     None: (),
-}```
+}
+```
 
 `plus_one` fonksiyonunun ilk çağrısını inceleyelim. `plus_one(five)` dediğimizde, fonksiyonun içindeki `x` değişkeni `Some(5)` değerine sahip olur. Sonra bunu match kollarıyla karşılaştırırız:
 ```
-Option::Some(val) => Option::Some(val + 1),```
+Option::Some(val) => Option::Some(val + 1),
+```
 
 `Option::Some(val)` kalıbı `Some(5)` değeriyle eşleşir. Bu durumda, `val` değişkeni `5` değerine bağlanır. Kod bloğu, `val + 1 `değerini `Option::Some` ile sarmalar ve `Option::Some(6)` değerini döndürür.
 ```
-Option::None(_) => Option::None(()),```
+Option::None(_) => Option::None(()),
+```
 
 Bu match koluna bakmaya gerek yoktur, çünkü eşleşen bir kalıp bulduk.
 
@@ -239,6 +251,7 @@ $ cairo-run src/test.cairo
     --> test.cairo:34:5
         match x {
         ^*******^
-    Error: failed to compile: ./src/test.cairo```
+    Error: failed to compile: ./src/test.cairo
+```
 
 Cairo, `Option::None` varyantını unuttuğumuzu anlar ve bize bunu söyler. Cairo’daki match’ler ayrıntılıdır: kodun geçerli olması için her ihtimali ele almalıyız. Özellikle **Option** durumunda, Cairo `None` durumunu açıkça işlemememiz durumunda, bizi **null **değerine sahipmiş gibi davranmaktan alıkoyar ve böylece daha önce bahsettiğimiz milyar dolarlık hatayı önler.
