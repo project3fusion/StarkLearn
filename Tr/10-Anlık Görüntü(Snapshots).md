@@ -45,3 +45,61 @@ fn calculate_length(
 `array_snapshot` değişkeninin geçerli olduğu kapsam, herhangi bir fonksiyon parametresinin kapsamı ile aynıdır, ancak `array_snapshot` kullanılmayı bıraktığında anlık görüntünün temel değeri düşmez. Fonksiyonlar parametre olarak gerçek değerler yerine anlık görüntülere sahip olduğunda, orijinal değerin sahipliğini geri vermek için değerleri döndürmemiz gerekmez, çünkü ona hiç sahip olmadık.
 
 Anlık görüntüler, değer türü kopyalanabilir olduğu sürece desnap operatörü `*` kullanılarak normal değerlere geri dönüştürülebilir. Aşağıdaki örnekte, bir dikdörtgenin alanını hesaplamak istiyoruz, ancak `calculate_area` fonksiyonunda dikdörtgenin sahipliğini almak istemiyoruz, çünkü fonksiyon çağrısından sonra dikdörtgeni tekrar kullanmak isteyebiliriz. Fonksiyonumuz dikdörtgen örneğini değiştirmediğinden, dikdörtgenin anlık görüntüsünü fonksiyona aktarabilir ve ardından desnap operatörünü `*` kullanarak anlık görüntüleri tekrar değerlere dönüştürebiliriz.
+
+```
+use debug::PrintTrait;
+
+#[derive(Copy, Drop)]
+struct Rectangle {
+    height: u64,
+    width: u64,
+}
+
+fn main() {
+    let rec = Rectangle { height: 3, width: 10 };
+    let area = calculate_area(@rec);
+    area.print();
+}
+
+fn calculate_area(rec: @Rectangle) -> u64 {
+    // rec' bir dikdörtgenin anlık görüntüsü olduğundan, alanları da alan türlerinin anlık görüntüleridir.
+    // Anlık görüntüleri '*' desnap operatörünü kullanarak tekrar değerlere dönüştürmemiz gerekir.
+    // Bu yalnızca türün kopyalanabilir olması durumunda mümkündür; u64 için durum böyledir.
+    // Burada '*' hem yükseklik ve genişliği çarpmak hem de anlık görüntülerin haritasını çıkarmak için kullanılır.
+    *rec.height * *rec.width
+}
+```
+## Değiştirilebilir Referanslar ##
+
+Not: Cairo'da, bir parametre ancak değişken mut ile bildirilmişse ref değiştiricisi kullanılarak mutable referans olarak tanımlanabilir.
+
+`flip` fonksiyonunda `Rectangle `örneğinin yükseklik ve genişlik alanlarının değerini değiştirmek için değiştirilebilir bir referans kullanırız.
+```
+use debug::PrintTrait;
+#[derive(Copy, Drop)]
+struct Rectangle {
+    height: u64,
+    width: u64,
+}
+
+fn main() {
+    let mut rec = Rectangle { height: 3, width: 10 };
+    flip(ref rec);
+    rec.height.print();
+    rec.width.print();
+}
+
+fn flip(ref rec: Rectangle) {
+    let temp = rec.height;
+    rec.height = rec.width;
+    rec.width = temp;
+}
+```
+İlk olarak `rec` değişkenini `mut` olarak değiştiriyoruz. Ardından `rec` değişkeninin mutable referansını `ref rec` ile `flipe` aktarıyoruz ve fonksiyon imzasını `ref rec: Rectangle` şeklinde mutable referansı kabul edecek şekilde güncelliyoruz. Bu, `flip` fonksiyonunun parametre olarak aktarılan `Rectangle` örneğinin değerini değiştireceğini çok açık hale getirir.
+
+Programın aşağıdaki gibi bir çıktı verir:
+```
+[DEBUG]                         (raw: 10)
+
+[DEBUG]                            (raw: 3)
+```
