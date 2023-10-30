@@ -1,7 +1,7 @@
 # Değişkenler (Variables ve Mutability)
 
 Cairo'da değişken tanımladığınızda, bu değişkeni değiştiremezsiniz çünkü Cairo'da değişkenler, diğer dillerin aksine değiştirilemez olarak tanımlanır. Basit bir değişkeni değiştirip terminale yazdırmak için variables adında bir scarb projesi başlatalım  ve aşağıdaki kodu kullanalım:
-```
+```rs
 use debug::PrintTrait;
 fn main() {
     let x = 15;
@@ -11,7 +11,7 @@ fn main() {
 }
 ```
 Bu kodu `scarb cairo-run` komutuyla çalıştırdığımızda aşağıdaki hatayı alırız:
-```
+```rs
 error: Cannot assign to an immutable variable.
  --> variables.cairo:5:5
     x = 20;
@@ -20,7 +20,7 @@ error: Cannot assign to an immutable variable.
 Error: failed to compile: variables.cairo
 ```
 Bu hata, `x` değerinin değiştirilemez (immutable) olduğunu ve ikinci bir değer atayamayacağınızı gösterir. Cairo'da değişkenleri değiştirilebilir (mutable) olarak tanımlamak için değişkenin soluna `mut` anahtar kelimesini ekleyebilirsiniz. Aşağıdaki kodu kullanarak bu değişikliği yapalım:
-```
+```rs
 use debug::PrintTrait;
 fn main() {
     let mut x = 15;
@@ -33,14 +33,14 @@ Bu şekilde değişkenin değerini değiştirebilir ve istediğimiz sonucu elde 
 
 ## Constants
 Sabitler de değişkenler gibi değiştirilemez, ancak değişkenlerin aksine sabitlerde "mut" anahtar kelimesi kullanılamaz ve `let` yerine `const `ile tanımlanırlar. İşte bir sabit değişken örneği:
-```
+```rs
 const ONE_HOUR_IN_SECONDS: u32 = 21000;
 ```
 Cairo'da sabitler, büyük harflerle ve iki kelime arasına alt çizgi koyularak isimlendirilir.
 
 ## Shadowing
 Gölgeleme, aynı isimle tanımlanan iki değişkenin durumunu ifade eder; burada son tanımlanan değişken, ilk tanımlananı gölgede bırakır. Bu durumu aşağıdaki örnekle açıklayalım:
-```
+```rs
 use debug::PrintTrait;
 fn main() {
     let x = 5;
@@ -58,7 +58,7 @@ Bu kodda, ilk olarak `x` değişkenine `5` değeri atanır. Ardından, `let x = 
 
 Gölgeleme durumunda `mut` anahtar kelimesi kullanılmaz. Çünkü `mut `anahtar kelimesi, aynı değişkene farklı bir değer atanabilmesini sağlar. Ancak gölgeleme durumunda, `let` anahtar kelimesiyle aynı isimli yeni bir değişken oluşturulur ve önceki değişken gölgede kalır.
 Daha önce de belirtildiği gibi, değişken gölgeleme ve değiştirilebilir değişkenler alt seviyede eşdeğerdir. Bir değişkeni gölgelediğinizde, türünü değiştirdiğinizde derleyicinin şikayet etmez. Örneğin, programımızın `u64` ve `felt252` tipleri arasında bir tip dönüşümü gerçekleştirdiğini varsayalım.
-```
+```rs
 use debug::PrintTrait;
 use traits::Into;
 fn main() {
@@ -72,7 +72,7 @@ fn main() {
 İlk `x` değişkeni `u64` tipine sahipken, ikinci `x` değişkeni `felt252` tipine sahiptir. Böylece gölgeleme bizi `x_u64` ve `x_felt252` gibi farklı isimler bulmaktan kurtarır; bunun yerine daha basit olan `x `ismini tekrar kullanabiliriz.
 
 Ancak, bunun için `mut` kullanmaya çalışırsak, burada gösterildiği gibi, bir derleme zamanı hatası alırız:
-```
+```rs
 use debug::PrintTrait;
 use traits::Into;
 fn main() {
@@ -83,7 +83,7 @@ fn main() {
 }
 ```
 Hata, bir u64 (orijinal tür) beklediğimizi ancak farklı bir türe sahip olduğumuzu söylüyor:
-```
+```rs
 $ scarb cairo-run
 error: Unexpected argument type. Expected: "core::integer::u32", found: "core::felt252".
  --> lib.cairo:9:9
